@@ -47,4 +47,69 @@ router.post(
   }
 );
 
+// @route           GET api/posts
+// @description     Get all Post
+// @access          Private (Must be loggin in to see post)
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ date: -1 }); //most recent
+    res.json(posts);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500)('Server Error');
+  }
+});
+
+// @route           GET api/posts:id
+// @description     Get post by ID
+// @access          Private (Must be loggin in to see post)
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+
+    res.json(post);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+    res.status(500)('Server Error');
+  }
+});
+
+// @route           DELETE api/posts/:id
+// @description     Delete a post
+// @access          Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+
+    //Check user
+    //post.user is an object. req.user.id is a string. use toString() to fix that
+    if (post.user.toString() !== req.user.id) {
+      return res.status(404).json({ msg: 'User not authorized' });
+    }
+
+    await post.remove();
+
+    res.json({ msg: 'Post removed' });
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
+    res.status(500)('Server Error');
+  }
+});
+
 module.exports = router;
+//
+//
