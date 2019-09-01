@@ -12,6 +12,7 @@ const Users = require('../../models/User');
 // @description     Get current users profile
 // @access          Private (beause we are sending in token)
 router.get('/me', auth, async (req, res) => {
+  //console.log(req);
   try {
     const profile = await Profile.findOne({ user: req.user.id }).populate(
       'user',
