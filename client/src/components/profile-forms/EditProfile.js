@@ -3,7 +3,7 @@ import { Link, withRouter } from 'react-router-dom'; //withRouter uses history o
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createProfile, getCurrentProfile } from '../../actions/profile';
-import { pathToFileURL } from 'url';
+//import { pathToFileURL } from 'url';
 
 const EditProfile = ({
   profile: { profile, loading },
@@ -46,7 +46,7 @@ const EditProfile = ({
       youtube: loading || !profile.social ? '' : profile.social.youtube,
       instagram: loading || !profile.social ? '' : profile.social.instagram
     });
-  }, [loading]); //[] stops loop
+  }, [loading, getCurrentProfile]); //[] stops loop
 
   //Create fields (above.) Destructure them (below)
   const {
